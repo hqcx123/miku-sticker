@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![AstrBot](https://img.shields.io/badge/AstrBot-%3E%3D4.4.0-blue)](https://github.com/AstrBotDevs/AstrBot)
 
-[![九种情绪表情总览](https://raw.githubusercontent.com/hqcx123/miku-astrbot-plugins/main/demo/sticker_preview.png)](https://github.com/hqcx123/miku-astrbot-plugins)
+[![九种情绪表情总览](https://raw.githubusercontent.com/hqcx123/magical-miku-bot/main/demo/sticker_preview.png)](https://github.com/hqcx123/magical-miku-bot)
 
 给 [AstrBot](https://github.com/AstrBotDevs/AstrBot) 用的表情包插件：让 bot 在回复里按情绪发本地表情图。
 
