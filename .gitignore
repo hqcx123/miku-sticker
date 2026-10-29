@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+*.pyo
+.debug.log
+.collect_state.json
+collected/
+
+# 不携带任何表情素材（版权）
+stickers/**/*.png
+stickers/**/*.jpg
+stickers/**/*.jpeg
+stickers/**/*.gif
+stickers/**/*.webp

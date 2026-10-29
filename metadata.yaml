@@ -1,0 +1,28 @@
+name: miku_sticker
+display_name: Miku 表情包
+short_desc: 按情绪自动发送初音表情包的插件
+desc: |
+  识别 LLM 回复中的 `[表情:xxx]` 标记，从本地 `stickers/xxx/` 文件夹随机发送一张表情图。
+
+  **特性**
+  - 9 种情绪：开心、害羞、得意、生气、委屈、吃瓜、晚安、爱心、惊讶
+  - 发送后自动从回复文本中移除标记，不影响可读性
+  - 可选：自动收集指定群聊里的图片，用视觉模型分类后入库
+  - 文件夹为空时静默跳过，不会报错
+
+  **准备素材**
+  本插件不附带任何图片（版权原因）。请自行准备表情图，按情绪放入 `stickers/<情绪>/` 目录，支持 jpg / png / gif / webp。
+
+  **配置**
+  修改 `main.py` 中的 `ALLOWED_GROUPS` 为你的群号（仅自动收集功能需要）。
+version: 1.0.0
+author: "qq:2757001649(有趣的生命)"
+repo: https://github.com/hqcx123/miku-sticker
+astrbot_version: ">=4.4.0"
+support_platforms:
+  - aiocqhttp
+social_link: https://github.com/hqcx123
+tags:
+  - 表情包
+  - 初音未来
+  - miku
