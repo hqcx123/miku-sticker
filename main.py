@@ -5,7 +5,6 @@ import json
 import os
 import random
 import re
-import time
 import urllib.parse
 from datetime import date
 from pathlib import Path
@@ -15,7 +14,7 @@ import aiohttp
 from astrbot.api import logger
 from astrbot.api.event import AstrMessageEvent, filter
 from astrbot.api.message_components import Image
-from astrbot.api.star import Context, Star, register
+from astrbot.api.star import Context, Star, StarTools, register
 
 MARK = re.compile(r"\[表情[:：]\s*([^\[\]:：\s]+)\s*\]")
 
@@ -42,15 +41,29 @@ CLASSIFY_PROMPT = (
     "miku_sticker",
     "qq:2757001649(有趣的生命)",
     "表情发送 + 指定群自动收集表情并按情绪分类",
-    "1.1.0",
+    "1.0.2",
 )
 class MikuSticker(Star):
     def __init__(self, context: Context):
         super().__init__(context)
-        root = Path(__file__).parent
-        self.base = root / "stickers"
-        self.collected = root / "collected"
-        self.state_file = root / ".collect_state.json"
+        # 自带素材目录（只读，用户手动放图）
+        self.assets_dir = Path(__file__).parent / "stickers"
+        # 持久化数据统一放到 data/plugin_data/miku_sticker/
+        self.data_dir = self._resolve_data_dir(context)
+        self.store_dir = self.data_dir / "stickers"
+        self.collected = self.data_dir / "collected"
+        self.state_file = self.data_dir / "state.json"
+
+    @staticmethod
+    def _resolve_data_dir(context: Context) -> Path:
+        """获取插件数据目录，兼容不同版本的 AstrBot API。"""
+        getter = getattr(context, "get_plugin_data_dir", None)
+        if callable(getter):
+            try:
+                return Path(getter("miku_sticker"))
+            except TypeError:
+                return Path(getter())
+        return Path(StarTools.get_data_dir("miku_sticker"))
 
     # ---------- 发送：识别 [表情:xxx] ----------
     @filter.on_decorating_result(priority=100)
@@ -68,13 +81,14 @@ class MikuSticker(Star):
             if t:
                 c.text = MARK.sub("", t)
         emo = m.group(1)
-        folder = self.base / emo
-        if not folder.is_dir():
-            return
-        pics = [
-            p for p in folder.iterdir()
-            if p.suffix.lower() in (".jpg", ".jpeg", ".png", ".gif", ".webp")
-        ]
+        pics = []
+        for folder in (self.assets_dir / emo, self.store_dir / emo):
+            if folder.is_dir():
+                pics.extend(
+                    p
+                    for p in folder.iterdir()
+                    if p.suffix.lower() in (".jpg", ".jpeg", ".png", ".gif", ".webp")
+                )
         if not pics:
             return
         chain.append(Image.fromFileSystem(str(random.choice(pics))))
@@ -89,9 +103,7 @@ class MikuSticker(Star):
                 gid = str(event.get_group_id() or "")
             except Exception:
                 gid = ""
-            self._dbg(
-                f"收到消息 gid={gid!r} 组件={[type(c).__name__ for c in comps]}"
-            )
+            self._debug(f"收到消息 gid={gid!r} 组件={[type(c).__name__ for c in comps]}")
             if gid not in ALLOWED_GROUPS:
                 return
 
@@ -102,7 +114,7 @@ class MikuSticker(Star):
                 raw = getattr(comp, "url", "") or getattr(comp, "file", "")
                 if not isinstance(raw, str) or not raw:
                     continue
-                self._dbg(f"  图片地址={raw[:90]!r}")
+                self._debug(f"  图片地址={raw[:90]!r}")
                 if raw.startswith("http"):
                     items.append(("http", raw))
                 else:
@@ -110,13 +122,13 @@ class MikuSticker(Star):
                     if path:
                         items.append(("file", path))
                     else:
-                        self._dbg(f"  跳过：本地文件不可读 {raw[:80]}")
+                        self._debug(f"  跳过：本地文件不可读 {raw[:80]}")
             if not items:
-                self._dbg("  没有可用图片")
+                self._debug("  没有可用图片")
                 return
             asyncio.create_task(self._save_all(items))
         except Exception as e:  # 收集失败绝不能影响正常聊天
-            self._dbg(f"异常 {e}")
+            self._debug(f"异常 {e}")
             logger.debug(f"[miku_sticker] 收集调度失败: {e}")
 
     def _local_path(self, raw):
@@ -134,19 +146,15 @@ class MikuSticker(Star):
                 return c
         return None
 
-    def _dbg(self, msg):
-        try:
-            with open(Path(__file__).parent / ".debug.log", "a", encoding="utf-8") as f:
-                f.write(f"{time.strftime('%H:%M:%S')} {msg}\n")
-        except Exception:
-            pass
+    def _debug(self, msg):
+        logger.debug(f"[miku_sticker] {msg}")
 
     async def _save_all(self, items):
         for kind, val in items:
             try:
                 await self._save_one(kind, val)
             except Exception as e:
-                self._dbg(f"  保存失败 {e}")
+                self._debug(f"  保存失败 {e}")
 
     # ---------- 内部 ----------
     def _read_state(self):
@@ -166,27 +174,29 @@ class MikuSticker(Star):
             async with aiohttp.ClientSession(timeout=timeout) as sess:
                 async with sess.get(val) as resp:
                     if resp.status != 200:
-                        self._dbg(f"  下载失败 HTTP {resp.status}")
+                        self._debug(f"  下载失败 HTTP {resp.status}")
                         return
                     data = await resp.read()
         else:
             try:
                 data = Path(val).read_bytes()
             except Exception as e:
-                self._dbg(f"  读本地文件失败 {e}")
+                self._debug(f"  读本地文件失败 {e}")
                 return
 
         if not data or len(data) > MAX_BYTES or len(data) < 1200:
-            self._dbg(f"  跳过：大小不合适 {len(data) if data else 0}B")
+            self._debug(f"  跳过：大小不合适 {len(data) if data else 0}B")
             return
 
         digest = hashlib.md5(data).hexdigest()[:12]
-        if any(self.base.rglob(f"{digest}.*")):
-            self._dbg("  跳过：已收集过")
+        if any(self.store_dir.rglob(f"{digest}.*")) or any(
+            self.collected.rglob(f"{digest}.*")
+        ):
+            self._debug("  跳过：已收集过")
             return  # 已收集过
 
         emotion = await self._classify(kind, val, data)
-        dst = (self.base / emotion) if emotion in EMOTIONS else self.collected
+        dst = (self.store_dir / emotion) if emotion in EMOTIONS else self.collected
         dst.mkdir(parents=True, exist_ok=True)
 
         if data[:6] in (b"GIF87a", b"GIF89a"):
@@ -203,7 +213,7 @@ class MikuSticker(Star):
         self.state_file.write_text(
             json.dumps(state, ensure_ascii=False), encoding="utf-8"
         )
-        self._dbg(f"  已保存 -> {dst.name}/{digest}{ext} 分类={emotion}")
+        self._debug(f"  已保存 -> {dst.name}/{digest}{ext} 分类={emotion}")
         logger.info(
             f"[miku_sticker] 收集 1 张 -> {dst.name}/ ({state[today]}/{DAILY_LIMIT})"
         )
@@ -221,7 +231,7 @@ class MikuSticker(Star):
         try:
             provider = self.context.get_using_provider()
             if provider is None:
-                self._dbg("  分类跳过：没有可用 provider")
+                self._debug("  分类跳过：没有可用 provider")
                 return "none"
             if kind == "http":
                 ref = val
@@ -230,13 +240,13 @@ class MikuSticker(Star):
                 ref = f"data:{self._mime(data)};base64,{b64}"
             resp = await provider.text_chat(prompt=CLASSIFY_PROMPT, image_urls=[ref])
             text = (resp.completion_text or "").strip()
-            self._dbg(f"  模型回答: {text[:60]!r}")
+            self._debug(f"  模型回答: {text[:60]!r}")
             for e in EMOTIONS:
                 if e in text:
                     return e
             return "none"
         except Exception as e:
-            self._dbg(f"  分类失败: {e}")
+            self._debug(f"  分类失败: {e}")
             logger.debug(f"[miku_sticker] 分类失败: {e}")
             return "none"
 

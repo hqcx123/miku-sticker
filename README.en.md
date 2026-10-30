@@ -42,6 +42,8 @@ Collect images posted in specified groups and classify them with a vision model:
 
 Images are uploaded to the model for classification, only in the groups you specify.
 
+Collected images and the daily counter are stored under AstrBot's `data/plugin_data/miku_sticker/`, not inside the plugin directory, so they survive plugin upgrades and can be backed up together with your data folder.
+
 ## Requirements
 
 - AstrBot >= 4.4.0
