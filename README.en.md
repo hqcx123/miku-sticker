@@ -52,3 +52,11 @@ Collected images and the daily counter are stored under AstrBot's `data/plugin_d
 ## License
 
 [MIT](LICENSE)
+
+## Community
+
+Found a bug, have a suggestion, or just want to talk about Miku? Join the QQ group:
+
+- QQ group: **1005773100** (search the number in QQ to join; group QR codes expire after 7 days, so no image is embedded here)
+
+You can also open an [issue](https://github.com/hqcx123/miku-sticker/issues) on GitHub — that way others running into the same problem can find it.
