@@ -1,4 +1,4 @@
-name: miku_sticker
+name: astrbot_plugin_miku_sticker
 display_name: Miku 表情包
 short_desc: 按情绪自动发送初音表情包的插件
 desc: |
@@ -16,7 +16,7 @@ desc: |
   配置
   修改 `main.py` 中的 `ALLOWED_GROUPS` 为你的群号（仅自动收集功能需要）。
 version: 1.0.2
-author: "qq:2757001649(有趣的生命)"
+author: hqcx123
 repo: https://github.com/hqcx123/miku-sticker
 astrbot_version: ">=4.4.0"
 support_platforms:

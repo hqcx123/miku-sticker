@@ -38,8 +38,8 @@ CLASSIFY_PROMPT = (
 
 
 @register(
-    "miku_sticker",
-    "qq:2757001649(有趣的生命)",
+    "astrbot_plugin_miku_sticker",
+    "hqcx123",
     "表情发送 + 指定群自动收集表情并按情绪分类",
     "1.0.2",
 )
@@ -48,7 +48,7 @@ class MikuSticker(Star):
         super().__init__(context)
         # 自带素材目录（只读，用户手动放图）
         self.assets_dir = Path(__file__).parent / "stickers"
-        # 持久化数据统一放到 data/plugin_data/miku_sticker/
+        # 持久化数据统一放到 data/plugin_data/astrbot_plugin_miku_sticker/
         self.data_dir = self._resolve_data_dir(context)
         self.store_dir = self.data_dir / "stickers"
         self.collected = self.data_dir / "collected"
@@ -60,10 +60,10 @@ class MikuSticker(Star):
         getter = getattr(context, "get_plugin_data_dir", None)
         if callable(getter):
             try:
-                return Path(getter("miku_sticker"))
+                return Path(getter("astrbot_plugin_miku_sticker"))
             except TypeError:
                 return Path(getter())
-        return Path(StarTools.get_data_dir("miku_sticker"))
+        return Path(StarTools.get_data_dir("astrbot_plugin_miku_sticker"))
 
     # ---------- 发送：识别 [表情:xxx] ----------
     @filter.on_decorating_result(priority=100)
@@ -129,7 +129,7 @@ class MikuSticker(Star):
             asyncio.create_task(self._save_all(items))
         except Exception as e:  # 收集失败绝不能影响正常聊天
             self._debug(f"异常 {e}")
-            logger.debug(f"[miku_sticker] 收集调度失败: {e}")
+            logger.debug(f"[astrbot_plugin_miku_sticker] 收集调度失败: {e}")
 
     def _local_path(self, raw):
         """把 Image 的 url/file 字段还原成本地绝对路径。"""
@@ -147,7 +147,7 @@ class MikuSticker(Star):
         return None
 
     def _debug(self, msg):
-        logger.debug(f"[miku_sticker] {msg}")
+        logger.debug(f"[astrbot_plugin_miku_sticker] {msg}")
 
     async def _save_all(self, items):
         for kind, val in items:
@@ -215,7 +215,7 @@ class MikuSticker(Star):
         )
         self._debug(f"  已保存 -> {dst.name}/{digest}{ext} 分类={emotion}")
         logger.info(
-            f"[miku_sticker] 收集 1 张 -> {dst.name}/ ({state[today]}/{DAILY_LIMIT})"
+            f"[astrbot_plugin_miku_sticker] 收集 1 张 -> {dst.name}/ ({state[today]}/{DAILY_LIMIT})"
         )
 
     def _mime(self, data):
@@ -247,6 +247,6 @@ class MikuSticker(Star):
             return "none"
         except Exception as e:
             self._debug(f"  分类失败: {e}")
-            logger.debug(f"[miku_sticker] 分类失败: {e}")
+            logger.debug(f"[astrbot_plugin_miku_sticker] 分类失败: {e}")
             return "none"
 

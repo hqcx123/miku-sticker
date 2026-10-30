@@ -42,7 +42,7 @@ LLM 输出： 诶嘿，被夸了呢[表情:害羞]
 
 图片会上传给模型做分类，仅在你指定的群生效。不需要这功能就不用改。
 
-收集到的图片、计数状态统一存放在 AstrBot 的 `data/plugin_data/miku_sticker/` 目录下，不会写进插件目录，升级或迁移插件时可随数据目录一起备份。
+收集到的图片、计数状态统一存放在 AstrBot 的 `data/plugin_data/astrbot_plugin_miku_sticker/` 目录下，不会写进插件目录，升级或迁移插件时可随数据目录一起备份。
 
 ## 依赖
 
