@@ -52,3 +52,14 @@ LLM 输出： 诶嘿，被夸了呢[表情:害羞]
 ## 许可
 
 [MIT](LICENSE)
+
+## 交流群
+
+使用中遇到问题、想提建议，或者只是想聊聊 Miku，都欢迎进群：
+
+- QQ 群号：**1005773100**
+- 群二维码：待填写（图片放进 `docs/qq-group.png` 后，把下面这行取消注释）
+
+<!-- ![QQ 群二维码](docs/qq-group.png) -->
+
+不方便加群的话，也可以直接在 GitHub [Issues](https://github.com/hqcx123/miku-sticker/issues) 反馈，方便其他人搜到同样的问题。
