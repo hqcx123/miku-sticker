@@ -5,11 +5,11 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![AstrBot](https://img.shields.io/badge/AstrBot-%3E%3D4.4.0-blue)](https://github.com/AstrBotDevs/AstrBot)
 
-![Nine emotion stickers](https://raw.githubusercontent.com/hqcx123/magical-miku-bot/main/demo/sticker_preview.png)
+[![Nine emotion stickers overview](https://raw.githubusercontent.com/hqcx123/magical-miku-bot/main/demo/sticker_preview.png)](https://github.com/hqcx123/magical-miku-bot)
 
 An [AstrBot](https://github.com/AstrBotDevs/AstrBot) plugin that lets your bot send local stickers based on emotion tags in its reply.
 
-> **Unofficial fan project.** Hatsune Miku is a character of Crypton Future Media. Not affiliated with Crypton or any official party. For personal, non-commercial use only.
+> **Unofficial fan project.** Hatsune Miku is a character of Crypton Future Media. Not affiliated with Crypton or any official party. For learning and personal, non-commercial use only.
 
 ## How it works
 
