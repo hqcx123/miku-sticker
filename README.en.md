@@ -51,7 +51,15 @@ Collected images and the daily counter are stored under AstrBot's `data/plugin_d
 
 ## License
 
-[MIT](LICENSE)
+The **code** in this project is released under the [MIT](LICENSE) license.
+
+Image assets under `stickers/` are **not** covered by the MIT license; copyright belongs to their respective authors. This repository ships no image assets — supply your own, or only use content you are licensed to use.
+
+## Disclaimer
+
+- This is an **unofficial fan project**. It is not affiliated with Crypton Future Media or the rights holders of Hatsune Miku; all character-related IP belongs to them.
+- The plugin does not bundle or distribute any official or third-party image assets. What you add is your own responsibility.
+- The auto-collection feature saves images sent by group members to local storage. Enable it only in groups you administer, inform members beforehand, and do not redistribute collected content.
 
 ## Community
 
